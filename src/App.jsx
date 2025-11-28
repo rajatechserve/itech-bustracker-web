@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import MapPage from './pages/Map';
 import Students from './pages/Students';
@@ -295,7 +295,7 @@ export default function App(){
           <main className="p-6 max-w-7xl mx-auto">
             <Routes>
               <Route path="/login" element={<Login onLogin={() => { setAuthUserState(getAuthUser()); }} />} />
-              <Route path="/" element={<Dashboard/>} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="/map" element={<MapPage/>} />
               <Route path="/buses" element={<Buses/>} />
               <Route path="/drivers" element={<Drivers/>} />
