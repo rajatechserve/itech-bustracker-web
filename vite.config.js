@@ -9,6 +9,7 @@ export default defineConfig({
   },
   preview: {
     port: process.env.PORT || 5173,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    allowedHosts: ['itech-bustracker-web-b3209a279fc0.herokuapp.com']
   }
 });
