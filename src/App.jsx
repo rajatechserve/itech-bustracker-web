@@ -316,23 +316,23 @@ export default function App()
           <main className="p-6 max-w-7xl mx-auto">
             <Routes>
               <Route path="/login" element={<Login onLogin={() => { setAuthUserState(getAuthUser()); }} />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/buses" element={<Buses />} />
-              <Route path="/drivers" element={<Drivers />} />
-              <Route path="/students" element={<Students />} />
-              <Route path="/parents" element={<Parents />} />
-              <Route path="/assignments" element={<Assignments />} />
-              <Route path="/attendance" element={<Attendance />} />
-              <Route path="/routes" element={<RoutesPage />} />
-              <Route path="/schools" element={<Schools />} />
-              <Route path="/admin-settings" element={<AdminSettings />} />
-              <Route path="/school-dashboard" element={<SchoolDashboard />} />
-              <Route path="/school-details" element={<SchoolDetails />} />
-              <Route path="/school-users" element={<SchoolUsers />} />
-              <Route path="/school-profile" element={<SchoolProfile />} />
-              <Route path="/driver-dashboard" element={<DriverDashboard />} />
-              <Route path="/parent-dashboard" element={<ParentDashboard />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/map" element={<MapPage/>} />
+              <Route path="/buses" element={<Buses/>} />
+              <Route path="/drivers" element={<Drivers/>} />
+              <Route path="/students" element={<Students/>} />
+              <Route path="/parents" element={<Parents/>} />
+              <Route path="/assignments" element={<Assignments/>} />
+              <Route path="/attendance" element={<Attendance/>} />
+              <Route path="/routes" element={<RoutesPage/>} />
+              <Route path="/schools" element={<Schools/>} />
+              <Route path="/admin-settings" element={<AdminSettings/>} />
+              <Route path="/school-dashboard" element={<SchoolDashboard/>} />
+              <Route path="/school-details" element={<SchoolDetails/>} />
+              <Route path="/school-users" element={<SchoolUsers/>} />
+              <Route path="/school-profile" element={<SchoolProfile/>} />
+              <Route path="/driver-dashboard" element={<DriverDashboard/>} />
+              <Route path="/parent-dashboard" element={<ParentDashboard/>} />
             </Routes>
           </main>
         </div>
