@@ -22,7 +22,8 @@ import Login from './pages/Login';
 import api, { getAuthUser, setAuthToken, setAuthUser, SERVER_URL } from './services/api';
 import { useTheme } from './context/ThemeContext';
 
-function Sidebar({ authUser, onLogoUpdate }){ 
+function Sidebar({ authUser, onLogoUpdate })
+{
   const isAdmin = authUser?.role === 'admin';
   const isSchoolAdmin = authUser?.role === 'school';
   const isSchoolUser = authUser?.role === 'schoolUser';
@@ -32,30 +33,36 @@ function Sidebar({ authUser, onLogoUpdate }){
   const isViewer = isSchoolUser && userRole === 'viewer';
   const logo = (isSchoolAdmin || isSchoolUser || isDriver || isParent) ? authUser?.logo : null;
   const [adminLogo, setAdminLogo] = React.useState(localStorage.getItem('adminLogo') || null);
-  
-  const handleLogoUpload = (e) => {
+
+  const handleLogoUpload = (e) =>
+  {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024)
+    {
       alert('Logo file size must be less than 2MB');
       return;
     }
     const reader = new FileReader();
-    reader.onloadend = () => {
+    reader.onloadend = () =>
+    {
       setAdminLogo(reader.result);
       localStorage.setItem('adminLogo', reader.result);
     };
     reader.readAsDataURL(file);
   };
-  
-  const getSidebarStyle = () => {
-    if(!isAdmin && authUser?.sidebarColorFrom && authUser?.sidebarColorTo){
+
+  const getSidebarStyle = () =>
+  {
+    if (!isAdmin && authUser?.sidebarColorFrom && authUser?.sidebarColorTo)
+    {
       return { background: `linear-gradient(to bottom, ${authUser.sidebarColorFrom}, ${authUser.sidebarColorTo})` };
     }
     const prefix = isAdmin ? 'admin' : 'school';
     const from = localStorage.getItem(`${prefix}SidebarFrom`);
     const to = localStorage.getItem(`${prefix}SidebarTo`);
-    if (from && to) {
+    if (from && to)
+    {
       const colorMap = {
         'blue-500': '#3b82f6', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
         'pink-500': '#ec4899', 'red-500': '#ef4444', 'orange-500': '#f97316',
@@ -70,108 +77,115 @@ function Sidebar({ authUser, onLogoUpdate }){
     return {};
   };
 
-  const hasCustomSidebarColors = () => {
-    if(!isAdmin && authUser?.sidebarColorFrom && authUser?.sidebarColorTo) return true;
+  const hasCustomSidebarColors = () =>
+  {
+    if (!isAdmin && authUser?.sidebarColorFrom && authUser?.sidebarColorTo) return true;
     const prefix = isAdmin ? 'admin' : 'school';
     return localStorage.getItem(`${prefix}SidebarFrom`) && localStorage.getItem(`${prefix}SidebarTo`);
   };
 
-  const isSchoolRole = ['school','schoolUser','driver','parent'].includes(authUser?.role);
+  const isSchoolRole = ['school', 'schoolUser', 'driver', 'parent'].includes(authUser?.role);
   const schoolName = authUser?.name || authUser?.schoolName;
 
   return (
-  <aside className={`w-64 ${hasCustomSidebarColors() ? '' : 'bg-white dark:bg-slate-800'} border-r dark:border-slate-700 hidden md:block`} style={getSidebarStyle()}>
-    <div className={`p-6 ${hasCustomSidebarColors() ? 'text-white' : 'text-slate-700 dark:text-slate-200'}`}>
-      <div className="flex flex-col items-center justify-center space-y-3">
-        {isAdmin ? (
-          <div className="flex items-center justify-center cursor-pointer group relative w-full" title="Click to upload logo">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleLogoUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              id="admin-logo-upload"
-            />
-            {adminLogo ? (
-              <img 
-                src={adminLogo.startsWith('/uploads') ? `${SERVER_URL}${adminLogo}` : adminLogo} 
-                alt="Admin Logo" 
-                className="h-20 w-auto max-w-[180px] object-contain" 
+    <aside className={`w-64 ${hasCustomSidebarColors() ? '' : 'bg-white dark:bg-slate-800'} border-r dark:border-slate-700 hidden md:block`} style={getSidebarStyle()}>
+      <div className={`p-6 ${hasCustomSidebarColors() ? 'text-white' : 'text-slate-700 dark:text-slate-200'}`}>
+        <div className="flex flex-col items-center justify-center space-y-3">
+          {isAdmin ? (
+            <div className="flex items-center justify-center cursor-pointer group relative w-full" title="Click to upload logo">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                id="admin-logo-upload"
               />
-            ) : (
-              <span className="text-center text-2xl font-semibold">SchoolBus</span>
-            )}
-          </div>
-        ) : logo ? (
-          <img 
-            src={logo.startsWith('/uploads') ? `${SERVER_URL}${logo}` : logo} 
-            alt="School Logo" 
-            className="h-20 w-auto max-w-[180px] object-contain" 
-          />
-        ) : (
-          <span className="text-center text-2xl font-semibold">SchoolBus</span>
-        )}
-        {isSchoolRole && schoolName && (
-          <div className={`text-center text-base font-semibold ${hasCustomSidebarColors() ? 'text-white' : 'text-slate-700 dark:text-slate-200'} px-2`}>
-            {schoolName}
-          </div>
-        )}
+              {adminLogo ? (
+                <img
+                  src={adminLogo.startsWith('/uploads') ? `${SERVER_URL}${adminLogo}` : adminLogo}
+                  alt="Admin Logo"
+                  className="h-20 w-auto max-w-[180px] object-contain"
+                />
+              ) : (
+                <span className="text-center text-2xl font-semibold">SchoolBus</span>
+              )}
+            </div>
+          ) : logo ? (
+            <img
+              src={logo.startsWith('/uploads') ? `${SERVER_URL}${logo}` : logo}
+              alt="School Logo"
+              className="h-20 w-auto max-w-[180px] object-contain"
+            />
+          ) : (
+            <span className="text-center text-2xl font-semibold">SchoolBus</span>
+          )}
+          {isSchoolRole && schoolName && (
+            <div className={`text-center text-base font-semibold ${hasCustomSidebarColors() ? 'text-white' : 'text-slate-700 dark:text-slate-200'} px-2`}>
+              {schoolName}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-    <nav className="p-4 space-y-2 text-sm">
-      {isAdmin && (
-        <>
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/">Dashboard</Link>
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/schools">Schools</Link>
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/admin-settings">Settings</Link>
-        </>
-      )}
-      {(isSchoolAdmin || isSchoolUser || isDriver || isParent) && (
-        <>
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-dashboard">Dashboard</Link>
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/map">Live Map</Link>
-          {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/attendance">Attendance</Link>}
-          {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/assignments">Assignments</Link>}
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/drivers">Drivers</Link>
-          {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/routes">Routes</Link>}
-          {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/buses">Buses</Link>}
-          {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/parents">Parents</Link>}
-          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/students">Students</Link>
-          {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-users">Users & Roles</Link>}
-          {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-profile">School Profile</Link>}
-        </>
-      )}
-    </nav>
-  </aside>
-);} 
+      <nav className="p-4 space-y-2 text-sm">
+        {isAdmin && (
+          <>
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/">Dashboard</Link>
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/schools">Schools</Link>
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/admin-settings">Settings</Link>
+          </>
+        )}
+        {(isSchoolAdmin || isSchoolUser || isDriver || isParent) && (
+          <>
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-dashboard">Dashboard</Link>
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/map">Live Map</Link>
+            {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/attendance">Attendance</Link>}
+            {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/assignments">Assignments</Link>}
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/drivers">Drivers</Link>
+            {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/routes">Routes</Link>}
+            {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/buses">Buses</Link>}
+            {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/parents">Parents</Link>}
+            <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/students">Students</Link>
+            {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-users">Users & Roles</Link>}
+            {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-profile">School Profile</Link>}
+          </>
+        )}
+      </nav>
+    </aside>
+  );
+}
 
-function Header({ onLogout, authUser }) {
+function Header({ onLogout, authUser })
+{
   // For drivers/parents, use userName (their actual name), otherwise use username or name
-  const username = (authUser?.role === 'driver' || authUser?.role === 'parent') 
-    ? authUser?.userName || authUser?.name 
+  const username = (authUser?.role === 'driver' || authUser?.role === 'parent')
+    ? authUser?.userName || authUser?.name
     : authUser?.username || authUser?.name;
   const schoolName = authUser?.schoolName || authUser?.name;
   const schoolPhoto = authUser?.photo;
-  const isSchool = ['school','schoolUser'].includes(authUser?.role);
+  const isSchool = ['school', 'schoolUser'].includes(authUser?.role);
   const isDriver = authUser?.role === 'driver';
   const isParent = authUser?.role === 'parent';
   const isAdmin = authUser?.role === 'admin';
   const { theme, setTheme } = useTheme();
-  
-  const ThemeIcon = ({ type }) => {
+
+  const ThemeIcon = ({ type }) =>
+  {
     if (type === 'light') return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
     if (type === 'dark') return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
     return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
   };
-  
-  const getHeaderStyle = () => {
-    if(!isAdmin && authUser?.headerColorFrom && authUser?.headerColorTo){
+
+  const getHeaderStyle = () =>
+  {
+    if (!isAdmin && authUser?.headerColorFrom && authUser?.headerColorTo)
+    {
       return { background: `linear-gradient(to right, ${authUser.headerColorFrom}, ${authUser.headerColorTo})` };
     }
     const prefix = isAdmin ? 'admin' : 'school';
     const from = localStorage.getItem(`${prefix}HeaderFrom`);
     const to = localStorage.getItem(`${prefix}HeaderTo`);
-    if (from && to) {
+    if (from && to)
+    {
       const colorMap = {
         'blue-500': '#3b82f6', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
         'pink-500': '#ec4899', 'red-500': '#ef4444', 'orange-500': '#f97316',
@@ -186,8 +200,9 @@ function Header({ onLogout, authUser }) {
     return {};
   };
 
-  const hasCustomHeaderColors = () => {
-    if(!isAdmin && authUser?.headerColorFrom && authUser?.headerColorTo) return true;
+  const hasCustomHeaderColors = () =>
+  {
+    if (!isAdmin && authUser?.headerColorFrom && authUser?.headerColorTo) return true;
     const prefix = isAdmin ? 'admin' : 'school';
     return localStorage.getItem(`${prefix}HeaderFrom`) && localStorage.getItem(`${prefix}HeaderTo`);
   };
@@ -262,24 +277,30 @@ function Header({ onLogout, authUser }) {
   );
 }
 
-export default function App(){
+export default function App()
+{
   const [authUserState, setAuthUserState] = useState(getAuthUser());
-  useEffect(()=>{ setAuthUserState(getAuthUser()); },[]);
+  useEffect(() => { setAuthUserState(getAuthUser()); }, []);
   // Fetch school profile for driver/parent and merge branding
-  useEffect(() => {
+  useEffect(() =>
+  {
     const u = authUserState;
-    if(!u) return;
-    if(['driver','parent'].includes(u.role) && u.schoolId && !u._schoolLoaded){
-      (async () => {
-        try {
+    if (!u) return;
+    if (['driver', 'parent'].includes(u.role) && u.schoolId && !u._schoolLoaded)
+    {
+      (async () =>
+      {
+        try
+        {
           const r = await api.get(`/public/schools/${u.schoolId}`);
-          if(r.data){
+          if (r.data)
+          {
             // Preserve original user's name and store school name separately
             const merged = { ...u, ...r.data, userName: u.name, schoolName: r.data.name, _schoolLoaded: true };
             setAuthUser(merged);
             setAuthUserState(merged);
           }
-        } catch(e){ console.log('school load (public) failed', e.message); }
+        } catch (e) { console.log('school load (public) failed', e.message); }
       })();
     }
   }, [authUserState]);
