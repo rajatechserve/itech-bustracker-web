@@ -1,0 +1,1 @@
+Complete Web admin app with CRUD, live map, auth. Run: cd web_complete_all && npm install && npm run dev

@@ -1,0 +1,1 @@
+@tailwind base;@tailwind components;@tailwind utilities; :root{--brand:#1a73e8;--muted:#6b7280} body{font-family:Inter,system-ui,Arial;} .card{@apply bg-white rounded-lg shadow p-4;} .btn-primary{@apply bg-[var(--brand)] text-white px-4 py-2 rounded;}

@@ -1,0 +1,4 @@
+filename_to_ignore
+*.log
+node_modules/
+# Ignore temporary files
