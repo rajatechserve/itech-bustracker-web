@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api, { getAuthUser, SERVER_URL } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 
-function ColorPicker() {
+function ColorPicker({ schoolId, schoolName }) {
   const user = getAuthUser();
   const [headerColors, setHeaderColors] = useState({
     from: localStorage.getItem('schoolHeaderFrom') || '',
@@ -51,11 +51,16 @@ function ColorPicker() {
   };
 
   const saveColors = async () => {
-    if (!user?.id) return;
+    if (!schoolId) {
+      alert('Failed to save colors: School not loaded');
+      return;
+    }
     setLoading(true);
     
     try {
-      await api.put(`/schools/${user.id}`, {
+      await api.put(`/schools/${schoolId}`, {
+        // Backend requires name; include current school name to avoid validation error
+        name: schoolName || 'School',
         headerColorFrom: headerColors.from || null,
         headerColorTo: headerColors.to || null,
         sidebarColorFrom: sidebarColors.from || null,
@@ -90,11 +95,15 @@ function ColorPicker() {
   };
 
   const resetColors = async () => {
-    if (!user?.id) return;
+    if (!schoolId) {
+      alert('Failed to reset colors: School not loaded');
+      return;
+    }
     setLoading(true);
     
     try {
-      await api.put(`/schools/${user.id}`, {
+      await api.put(`/schools/${schoolId}`, {
+        name: schoolName || 'School',
         headerColorFrom: null,
         headerColorTo: null,
         sidebarColorFrom: null,
@@ -253,7 +262,11 @@ export default function SchoolProfile() {
     try {
       const res = await api.get('/schools');
       if (res.data?.data && res.data.data.length > 0) {
-        const school = res.data.data[0];
+        // Prefer the admin's assigned school if available
+        const allSchools = res.data.data;
+        const currentUser = getAuthUser();
+        const preferredId = currentUser?.schoolId || currentUser?.school?.id || currentUser?.id;
+        const school = (preferredId && allSchools.find(s => String(s.id) === String(preferredId))) || allSchools[0];
         setSchoolId(school.id);
         setForm({
           name: school.name || '',
@@ -733,7 +746,7 @@ export default function SchoolProfile() {
       {/* Color Customization */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6 mt-6">
         <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-slate-200">Color Customization</h3>
-        <ColorPicker />
+        <ColorPicker schoolId={schoolId} schoolName={form.name} />
       </div>
     </div>
   );
