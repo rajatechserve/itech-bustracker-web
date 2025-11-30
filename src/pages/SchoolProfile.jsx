@@ -58,14 +58,25 @@ function ColorPicker({ schoolId, schoolName }) {
     setLoading(true);
     
     try {
-      await api.put(`/schools/${schoolId}`, {
-        // Backend requires name; include current school name to avoid validation error
-        name: schoolName || 'School',
+      // Fetch current school fields to avoid clearing existing data (logo/photo/address...)
+      const res = await api.get('/schools');
+      const current = (res.data?.data || []).find(s => String(s.id) === String(schoolId)) || (res.data?.data || [])[0] || {};
+      const payload = {
+        name: (schoolName || current.name || '').trim() || 'School',
+        address: current.address || null,
+        city: current.city || null,
+        state: current.state || null,
+        county: current.county || null,
+        phone: current.phone || null,
+        mobile: current.mobile || null,
+        logo: current.logo || null,
+        photo: current.photo || null,
         headerColorFrom: headerColors.from || null,
         headerColorTo: headerColors.to || null,
         sidebarColorFrom: sidebarColors.from || null,
         sidebarColorTo: sidebarColors.to || null
-      });
+      };
+      await api.put(`/schools/${schoolId}`, payload);
       
       // Update localStorage for immediate effect
       if (headerColors.from && headerColors.to) {
@@ -102,13 +113,25 @@ function ColorPicker({ schoolId, schoolName }) {
     setLoading(true);
     
     try {
-      await api.put(`/schools/${schoolId}`, {
-        name: schoolName || 'School',
+      // Keep existing base fields; only clear color fields
+      const res = await api.get('/schools');
+      const current = (res.data?.data || []).find(s => String(s.id) === String(schoolId)) || (res.data?.data || [])[0] || {};
+      const payload = {
+        name: (schoolName || current.name || '').trim() || 'School',
+        address: current.address || null,
+        city: current.city || null,
+        state: current.state || null,
+        county: current.county || null,
+        phone: current.phone || null,
+        mobile: current.mobile || null,
+        logo: current.logo || null,
+        photo: current.photo || null,
         headerColorFrom: null,
         headerColorTo: null,
         sidebarColorFrom: null,
         sidebarColorTo: null
-      });
+      };
+      await api.put(`/schools/${schoolId}`, payload);
       
       setHeaderColors({ from: '', to: '' });
       setSidebarColors({ from: '', to: '' });
