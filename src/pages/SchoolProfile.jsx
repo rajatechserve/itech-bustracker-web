@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api, { getAuthUser, SERVER_URL } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 
-function ColorPicker() {
+function ColorPicker({ schoolId, schoolName }) {
   const user = getAuthUser();
   const [headerColors, setHeaderColors] = useState({
     from: localStorage.getItem('schoolHeaderFrom') || '',
@@ -51,16 +51,32 @@ function ColorPicker() {
   };
 
   const saveColors = async () => {
-    if (!user?.id) return;
+    if (!schoolId) {
+      alert('Failed to save colors: School not loaded');
+      return;
+    }
     setLoading(true);
     
     try {
-      await api.put(`/schools/${user.id}`, {
+      // Fetch current school fields to avoid clearing existing data (logo/photo/address...)
+      const res = await api.get('/schools');
+      const current = (res.data?.data || []).find(s => String(s.id) === String(schoolId)) || (res.data?.data || [])[0] || {};
+      const payload = {
+        name: (schoolName || current.name || '').trim() || 'School',
+        address: current.address || null,
+        city: current.city || null,
+        state: current.state || null,
+        county: current.county || null,
+        phone: current.phone || null,
+        mobile: current.mobile || null,
+        logo: current.logo || null,
+        photo: current.photo || null,
         headerColorFrom: headerColors.from || null,
         headerColorTo: headerColors.to || null,
         sidebarColorFrom: sidebarColors.from || null,
         sidebarColorTo: sidebarColors.to || null
-      });
+      };
+      await api.put(`/schools/${schoolId}`, payload);
       
       // Update localStorage for immediate effect
       if (headerColors.from && headerColors.to) {
@@ -90,16 +106,32 @@ function ColorPicker() {
   };
 
   const resetColors = async () => {
-    if (!user?.id) return;
+    if (!schoolId) {
+      alert('Failed to reset colors: School not loaded');
+      return;
+    }
     setLoading(true);
     
     try {
-      await api.put(`/schools/${user.id}`, {
+      // Keep existing base fields; only clear color fields
+      const res = await api.get('/schools');
+      const current = (res.data?.data || []).find(s => String(s.id) === String(schoolId)) || (res.data?.data || [])[0] || {};
+      const payload = {
+        name: (schoolName || current.name || '').trim() || 'School',
+        address: current.address || null,
+        city: current.city || null,
+        state: current.state || null,
+        county: current.county || null,
+        phone: current.phone || null,
+        mobile: current.mobile || null,
+        logo: current.logo || null,
+        photo: current.photo || null,
         headerColorFrom: null,
         headerColorTo: null,
         sidebarColorFrom: null,
         sidebarColorTo: null
-      });
+      };
+      await api.put(`/schools/${schoolId}`, payload);
       
       setHeaderColors({ from: '', to: '' });
       setSidebarColors({ from: '', to: '' });
@@ -253,7 +285,11 @@ export default function SchoolProfile() {
     try {
       const res = await api.get('/schools');
       if (res.data?.data && res.data.data.length > 0) {
-        const school = res.data.data[0];
+        // Prefer the admin's assigned school if available
+        const allSchools = res.data.data;
+        const currentUser = getAuthUser();
+        const preferredId = currentUser?.schoolId || currentUser?.school?.id || currentUser?.id;
+        const school = (preferredId && allSchools.find(s => String(s.id) === String(preferredId))) || allSchools[0];
         setSchoolId(school.id);
         setForm({
           name: school.name || '',
@@ -733,7 +769,7 @@ export default function SchoolProfile() {
       {/* Color Customization */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6 mt-6">
         <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-slate-200">Color Customization</h3>
-        <ColorPicker />
+        <ColorPicker schoolId={schoolId} schoolName={form.name} />
       </div>
     </div>
   );
