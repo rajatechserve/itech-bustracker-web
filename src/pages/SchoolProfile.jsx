@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api, { getAuthUser, SERVER_URL } from '../services/api';
+import api, { getAuthUser, SERVER_URL, setAuthUser } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 
 function ColorPicker({ schoolId, schoolName }) {
@@ -95,8 +95,32 @@ function ColorPicker({ schoolId, schoolName }) {
         localStorage.removeItem('schoolSidebarTo');
       }
       
-      setSuccess('Colors saved! Refreshing page...');
-      setTimeout(() => window.location.reload(), 1000);
+      // Re-fetch the updated school and merge into auth user so header/sidebar update without reload
+      const refreshed = await api.get('/schools');
+      const list = refreshed.data?.data || [];
+      const updatedSchool = list.find(s => String(s.id) === String(schoolId)) || list[0];
+      const currentUser = getAuthUser();
+      if(currentUser && updatedSchool){
+        const mergedUser = {
+          ...currentUser,
+          name: updatedSchool.name || currentUser.name,
+          schoolName: updatedSchool.name || currentUser.schoolName || currentUser.name,
+          logo: updatedSchool.logo || currentUser.logo || null,
+          photo: updatedSchool.photo || currentUser.photo || null,
+          address: updatedSchool.address || currentUser.address || null,
+          city: updatedSchool.city || currentUser.city || null,
+          state: updatedSchool.state || currentUser.state || null,
+          county: updatedSchool.county || currentUser.county || null,
+          phone: updatedSchool.phone || currentUser.phone || null,
+          mobile: updatedSchool.mobile || currentUser.mobile || null,
+          headerColorFrom: updatedSchool.headerColorFrom || null,
+          headerColorTo: updatedSchool.headerColorTo || null,
+          sidebarColorFrom: updatedSchool.sidebarColorFrom || null,
+          sidebarColorTo: updatedSchool.sidebarColorTo || null,
+        };
+        setAuthUser(mergedUser);
+      }
+      setSuccess('Colors saved and applied');
     } catch (err) {
       setSuccess('');
       alert('Failed to save colors: ' + (err?.response?.data?.error || err.message));
@@ -140,8 +164,24 @@ function ColorPicker({ schoolId, schoolName }) {
       localStorage.removeItem('schoolSidebarFrom');
       localStorage.removeItem('schoolSidebarTo');
       
-      setSuccess('Colors reset! Refreshing page...');
-      setTimeout(() => window.location.reload(), 1000);
+      // Update auth user with cleared colors without reload
+      const refreshed = await api.get('/schools');
+      const list = refreshed.data?.data || [];
+      const updatedSchool = list.find(s => String(s.id) === String(schoolId)) || list[0];
+      const currentUser = getAuthUser();
+      if(currentUser && updatedSchool){
+        const mergedUser = {
+          ...currentUser,
+          headerColorFrom: null,
+          headerColorTo: null,
+          sidebarColorFrom: null,
+          sidebarColorTo: null,
+          name: updatedSchool?.name || currentUser.name,
+          schoolName: updatedSchool?.name || currentUser.schoolName || currentUser.name,
+        };
+        setAuthUser(mergedUser);
+      }
+      setSuccess('Colors reset and defaults applied');
     } catch (err) {
       setSuccess('');
       alert('Failed to reset colors: ' + (err?.response?.data?.error || err.message));
@@ -332,25 +372,26 @@ export default function SchoolProfile() {
     try {
       await api.put(`/schools/${schoolId}`, form);
       setSuccess('Profile updated successfully');
-      
-      // Refresh user session data
+      // Refresh user session data without full page reload
       const schoolRes = await api.get('/schools');
-      if (schoolRes.data?.data && schoolRes.data.data.length > 0) {
-        const updatedSchool = schoolRes.data.data[0];
-        const currentUser = getAuthUser();
-        if (currentUser) {
-          const updatedUser = {
-            ...currentUser,
-            name: updatedSchool.name,
-            logo: updatedSchool.logo,
-            photo: updatedSchool.photo,
-            address: updatedSchool.address,
-            city: updatedSchool.city,
-            state: updatedSchool.state
-          };
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-          window.location.reload(); // Refresh to update sidebar logo and dashboard
-        }
+      const list = schoolRes.data?.data || [];
+      const updatedSchool = list.find(s => String(s.id) === String(schoolId)) || list[0];
+      const currentUser = getAuthUser();
+      if (currentUser && updatedSchool) {
+        const updatedUser = {
+          ...currentUser,
+          name: updatedSchool.name || currentUser.name,
+          schoolName: updatedSchool.name || currentUser.schoolName || currentUser.name,
+          logo: updatedSchool.logo || currentUser.logo || null,
+          photo: updatedSchool.photo || currentUser.photo || null,
+          address: updatedSchool.address || currentUser.address || null,
+          city: updatedSchool.city || currentUser.city || null,
+          state: updatedSchool.state || currentUser.state || null,
+          county: updatedSchool.county || currentUser.county || null,
+          phone: updatedSchool.phone || currentUser.phone || null,
+          mobile: updatedSchool.mobile || currentUser.mobile || null,
+        };
+        setAuthUser(updatedUser);
       }
     } catch (e) {
       setError(e?.response?.data?.error || 'Failed to update profile');

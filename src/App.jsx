@@ -287,7 +287,7 @@ export default function App(){
         } catch(e){ console.log('school load (public) failed', e.message); }
       })();
     }
-    // Fetch full school record for school admin or sub-user to ensure colors apply
+    // Fetch full school record for school admin or sub-user to ensure branding applies (logo, address, phone, colors)
     if(['school','schoolUser'].includes(u.role)){
       (async () => {
         try {
@@ -297,6 +297,17 @@ export default function App(){
           if (school){
             const merged = {
               ...u,
+              // Core branding fields from school
+              name: school.name || u.name,
+              schoolName: school.name || u.schoolName || u.name,
+              address: school.address || u.address || null,
+              city: school.city || u.city || null,
+              state: school.state || u.state || null,
+              county: school.county || u.county || null,
+              phone: school.phone || u.phone || null,
+              mobile: school.mobile || u.mobile || null,
+              logo: school.logo || u.logo || null,
+              photo: school.photo || u.photo || null,
               headerColorFrom: school.headerColorFrom || null,
               headerColorTo: school.headerColorTo || null,
               sidebarColorFrom: school.sidebarColorFrom || null,
