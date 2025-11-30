@@ -287,6 +287,32 @@ export default function App(){
         } catch(e){ console.log('school load (public) failed', e.message); }
       })();
     }
+    // Fetch full school record for school admin or sub-user to ensure colors apply
+    if(['school','schoolUser'].includes(u.role)){
+      (async () => {
+        try {
+          const res = await api.get('/schools');
+          const data = res.data?.data || [];
+          const school = u.role === 'school' ? data.find(s => String(s.id) === String(u.id)) : data.find(s => String(s.id) === String(u.schoolId));
+          if (school){
+            const merged = {
+              ...u,
+              headerColorFrom: school.headerColorFrom || null,
+              headerColorTo: school.headerColorTo || null,
+              sidebarColorFrom: school.sidebarColorFrom || null,
+              sidebarColorTo: school.sidebarColorTo || null,
+            };
+            // Persist to localStorage for consistency
+            localStorage.setItem('schoolHeaderFrom', school.headerColorFrom || '');
+            localStorage.setItem('schoolHeaderTo', school.headerColorTo || '');
+            localStorage.setItem('schoolSidebarFrom', school.sidebarColorFrom || '');
+            localStorage.setItem('schoolSidebarTo', school.sidebarColorTo || '');
+            setAuthUser(merged);
+            setAuthUserState(merged);
+          }
+        } catch(e){ console.log('school load (colors) failed', e.message); }
+      })();
+    }
   }, [authUserState]);
   const logout = () => { setAuthToken(null); setAuthUser(null); setAuthUserState(null); window.location.href = '/login'; };
   return (
