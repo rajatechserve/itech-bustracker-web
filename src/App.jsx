@@ -51,24 +51,28 @@ function Sidebar({ authUser, onLogoUpdate }){
     reader.readAsDataURL(file);
   };
   
+  const colorMap = {
+    'blue-500': '#3b82f6', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
+    'pink-500': '#ec4899', 'red-500': '#ef4444', 'orange-500': '#f97316',
+    'amber-500': '#f59e0b', 'yellow-500': '#eab308', 'lime-500': '#84cc16',
+    'green-600': '#16a34a', 'emerald-600': '#059669', 'teal-600': '#0d9488',
+    'cyan-500': '#06b6d4', 'sky-500': '#0ea5e9', 'violet-600': '#7c3aed',
+    'fuchsia-600': '#c026d3', 'rose-500': '#f43f5e', 'slate-700': '#334155',
+    'white': '#ffffff'
+  };
+  const toHex = (val) => colorMap[val] || val;
+
   const getSidebarStyle = () => {
     if(!isAdmin && authUser?.sidebarColorFrom && authUser?.sidebarColorTo){
-      return { background: `linear-gradient(to bottom, ${authUser.sidebarColorFrom}, ${authUser.sidebarColorTo})` };
+      const fromHex = toHex(authUser.sidebarColorFrom);
+      const toHexVal = toHex(authUser.sidebarColorTo);
+      return { background: `linear-gradient(to bottom, ${fromHex}, ${toHexVal})` };
     }
     const prefix = isAdmin ? 'admin' : 'school';
     const from = localStorage.getItem(`${prefix}SidebarFrom`);
     const to = localStorage.getItem(`${prefix}SidebarTo`);
     if (from && to) {
-      const colorMap = {
-        'blue-500': '#3b82f6', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
-        'pink-500': '#ec4899', 'red-500': '#ef4444', 'orange-500': '#f97316',
-        'amber-500': '#f59e0b', 'yellow-500': '#eab308', 'lime-500': '#84cc16',
-        'green-600': '#16a34a', 'emerald-600': '#059669', 'teal-600': '#0d9488',
-        'cyan-500': '#06b6d4', 'sky-500': '#0ea5e9', 'violet-600': '#7c3aed',
-        'fuchsia-600': '#c026d3', 'rose-500': '#f43f5e', 'slate-700': '#334155',
-        'white': '#ffffff'
-      };
-      return { background: `linear-gradient(to bottom, ${colorMap[from]}, ${colorMap[to]})` };
+      return { background: `linear-gradient(to bottom, ${toHex(from)}, ${toHex(to)})` };
     }
     return {};
   };
@@ -171,22 +175,15 @@ function Header({ onLogout, authUser }) {
   
   const getHeaderStyle = () => {
     if(!isAdmin && authUser?.headerColorFrom && authUser?.headerColorTo){
-      return { background: `linear-gradient(to right, ${authUser.headerColorFrom}, ${authUser.headerColorTo})` };
+      const fromHex = toHex(authUser.headerColorFrom);
+      const toHexVal = toHex(authUser.headerColorTo);
+      return { background: `linear-gradient(to right, ${fromHex}, ${toHexVal})` };
     }
     const prefix = isAdmin ? 'admin' : 'school';
     const from = localStorage.getItem(`${prefix}HeaderFrom`);
     const to = localStorage.getItem(`${prefix}HeaderTo`);
     if (from && to) {
-      const colorMap = {
-        'blue-500': '#3b82f6', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
-        'pink-500': '#ec4899', 'red-500': '#ef4444', 'orange-500': '#f97316',
-        'amber-500': '#f59e0b', 'yellow-500': '#eab308', 'lime-500': '#84cc16',
-        'green-600': '#16a34a', 'emerald-600': '#059669', 'teal-600': '#0d9488',
-        'cyan-500': '#06b6d4', 'sky-500': '#0ea5e9', 'violet-600': '#7c3aed',
-        'fuchsia-600': '#c026d3', 'rose-500': '#f43f5e', 'slate-700': '#334155',
-        'white': '#ffffff'
-      };
-      return { background: `linear-gradient(to right, ${colorMap[from]}, ${colorMap[to]})` };
+      return { background: `linear-gradient(to right, ${toHex(from)}, ${toHex(to)})` };
     }
     return {};
   };
