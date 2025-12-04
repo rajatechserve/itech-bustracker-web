@@ -11,6 +11,7 @@ import Buses from './pages/Buses';
 import RoutesPage from './pages/Routes';
 import Parents from './pages/Parents';
 import Schools from './pages/Schools';
+import Notifications from './pages/Notifications';
 import SchoolDashboard from './pages/SchoolDashboard';
 import SchoolDetails from './pages/SchoolDetails';
 import SchoolUsers from './pages/SchoolUsers';
@@ -145,6 +146,7 @@ function Sidebar({ authUser, onLogoUpdate }){
           {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/buses">Buses</Link>}
           {!isViewer && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/parents">Parents</Link>}
           <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/students">Students</Link>
+          <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/notifications">Notifications</Link>
           {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-users">Users & Roles</Link>}
           {isSchoolAdmin && <Link className={`block py-3 px-4 rounded-lg ${hasCustomSidebarColors() ? 'text-white hover:bg-white/20 hover:backdrop-blur-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'} transition-all duration-200 font-medium`} to="/school-profile">School Profile</Link>}
         </>
@@ -353,6 +355,7 @@ export default function App(){
               <Route path="/school-profile" element={<SchoolProfile/>} />
               <Route path="/driver-dashboard" element={<DriverDashboard/>} />
               <Route path="/parent-dashboard" element={<ParentDashboard/>} />
+              <Route path="/notifications" element={<Notifications/>} />
             </Routes>
           </main>
         </div>

@@ -79,11 +79,31 @@ export default function Map({ embedded = false }){
           markersRef.current.clearLayers();
           const L = window.L;
           const busIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61207.png', iconSize: [32,32] });
+          const statusChip = (live) => {
+            const running = live?.running;
+            const dir = live?.direction ? (live.direction === 'evening' ? 'Evening' : 'Morning') : '';
+            const time = live?.lastPingAt ? new Date(live.lastPingAt).toLocaleTimeString() : '';
+            return `<span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${running ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}">${running ? '●' : '○'} ${dir} ${time}</span>`;
+          };
           
-          buses.forEach(b=>{
-            if(b.location && (selectedBuses.length === 0 || selectedBuses.includes(b.id))){
-              const m = L.marker([b.location.lat,b.location.lng], { icon: busIcon })
-                .bindPopup(`<div class="text-center"><strong class="text-base">${b.number}</strong><br/><span class="text-sm">${b.driverName||'No driver assigned'}</span></div>`);
+          // Prefer live endpoint for freshest location and status
+          const busPromises = buses.map(async (b)=>{
+            try{
+              const live = await api.get(`/public/bus/${b.id}/live`);
+              return { bus: b, live: live.data };
+            }catch(e){ return { bus: b, live: null }; }
+          });
+          const enriched = await Promise.all(busPromises);
+          enriched.forEach(({ bus, live })=>{
+            const loc = live?.location || bus.location;
+            if(loc && (selectedBuses.length === 0 || selectedBuses.includes(bus.id))){
+              const m = L.marker([loc.lat, loc.lng], { icon: busIcon })
+                .bindPopup(`<div class="text-center">
+                  <strong class="text-base">${bus.number}</strong><br/>
+                  <span class="text-sm">${bus.driverName||'No driver assigned'}</span><br/>
+                  ${statusChip(live)}<br/>
+                  ${live?.tripId ? `<a href="/notifications?tripId=${live.tripId}" class="text-xs text-blue-600 underline">View Notifications</a>` : ''}
+                </div>`);
               markersRef.current.addLayer(m);
             }
           });
